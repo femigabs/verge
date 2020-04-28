@@ -27,7 +27,7 @@ const queries = {
         status,
         created_at
         ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
-    getSpecificUser: `
+    getSpecificUserOrder: `
         SELECT * FROM verge_parcel WHERE user_id=($1) AND id=($2)`,
     getUserOrderById: `
         SELECT * FROM verge_parcel WHERE user_id=($1)`,

@@ -3,11 +3,10 @@ const bodyParser = require("body-parser")
 const db = require("./database");
 const user = require("./Routes/userRoute"); 
 const admin = require("./Routes/adminRoute");
-const parcel = require("./Routes/parcelRoute")
-
+const parcel = require("./Routes/parcelRoute");
 
 let app = express();
-let port = 4000;
+let port = process.env.PORT || 4000;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

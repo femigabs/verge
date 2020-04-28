@@ -41,7 +41,7 @@ async function createNewParcel(user_id, body) {
 
 async function getSpecificUserParcel(user_id, id){
     const queryObj ={
-        text: queries.getSpecificUser,
+        text: queries.getSpecificUserOrder,
         values:[user_id, id]
     };
     try{
@@ -68,7 +68,7 @@ async function getSpecificUserParcel(user_id, id){
             message: "Error finding sender"
         });
     }
-}
+};
 
 async function getUserParcelByid(user_id){
     const queryObj = {
