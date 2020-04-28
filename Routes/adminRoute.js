@@ -7,7 +7,7 @@ const {
     changeOrderStatus,
     changeOrderlocation,
     getAllParcel
-} = require("../controllers/adminController");
+} = require("../Controllers/adminController");
 
 const {
     schema
