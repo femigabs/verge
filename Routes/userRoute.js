@@ -6,7 +6,7 @@ const {
     checkIfUserDoesNotExistBefore,
     createNewUser,
     checkIfUserExist
-} = require("../controllers/userController");
+} = require("../Controllers/userController");
 
 const {
     schema
