@@ -1,22 +1,24 @@
 const queries = {
     addNewUser: `
-    INSERT INTO verge_user(
+    INSERT INTO users(
     email,
     password,
     first_name,
     last_name,
     state,
     created_at,
-    is_admin
-    ) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+    updated_at,
+    is_admin,
+    is_super_admin
+    ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
     findUserByEmail: `
-    SELECT * FROM verge_user WHERE email=($1)
+    SELECT * FROM users WHERE email=($1)
     `,
     loginUser: `
-    SELECT * FROM verge_user WHERE email=$1
+    SELECT * FROM users WHERE email=$1
     `,
     addNewParcel: `
-    INSERT INTO verge_parcel(
+    INSERT INTO parcels(
         user_id,
         price,
         weight,
@@ -25,26 +27,27 @@ const queries = {
         sender_name,
         sender_note,
         status,
-        created_at
-        ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
+        created_at,
+        updated_at
+        ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
     getSpecificUserOrder: `
-        SELECT * FROM verge_parcel WHERE user_id=($1) AND id=($2)`,
+        SELECT * FROM parcels WHERE user_id=($1) AND id=($2)`,
     getUserOrderById: `
-        SELECT * FROM verge_parcel WHERE user_id=($1)`,
-    deleteUserOrderById: ` 
-        DELETE FROM verge_parcel WHERE user_id=($1) AND id=($2)`,
+        SELECT * FROM parcels WHERE user_id=($1)`,
+    cancelParcelOrderById: ` 
+        DELETE FROM parcels WHERE user_id=($1) AND id=($2)`,
     updateOrderDestinationById: `
-        UPDATE verge_parcel SET destination=($1), user_id=($2) WHERE id=($3) RETURNING *`,
+        UPDATE parcels SET destination=($1), user_id=($2) WHERE id=($3) RETURNING *`,
     updateOrderStatusById: `
-        UPDATE verge_parcel SET status=($1), user_id=($2) WHERE id=($3) RETURNING *`,
+        UPDATE parcels SET status=($1) WHERE id=($2) RETURNING *`,
     updateOrderlocationById: `
-        UPDATE verge_parcel SET location=($1), user_id=($2) WHERE id=($3) RETURNING *`,
+        UPDATE parcels SET location=($1) WHERE id=($2) RETURNING *`,
     getAllUserOrder: `
-        SELECT * FROM verge_parcel`,
+        SELECT * FROM parcels`,
     getStatus: `
-        SELECT * FROM verge_parcel WHERE user_id=($1) AND id=($2)`,
+        SELECT * FROM parcels WHERE user_id=($1) AND id=($2)`,
     findUserById: `
-        SELECT * FROM verge_user WHERE id=($1)`,
+        SELECT * FROM users WHERE id=($1)`,
 };
 
 module.exports = queries;

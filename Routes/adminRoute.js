@@ -13,20 +13,17 @@ const {
     schema
 } = require("../Authorization/validation");
 
-const {verifyToken} = require("../Authorization/verifyToken");
+const { verifyAdminToken, verifySuperAdminToken } = require("../Authorization/verifyToken");
 
 router.post(
-    "/auth/admin/signup",
+    "/auth/admin/signup", verifySuperAdminToken,
     async (req, res, next) => {
         try {
-            const value = await schema.user.validate(req.body)
-            if (value.error) {
-                return res.json({
-                    message: value.error.details[0].message
-                })
-            }
-        } catch (e) {
-            console.log(e)
+            await schema.user.validateAsync(req.body)
+        } catch (error) {
+            return res.status(400).json({
+                error: error.details[0].message.replace(/[\"]/gi, "")
+            })
         }
         next();
     },
@@ -35,6 +32,12 @@ router.post(
         try {
             await checkIfUserDoesNotExistBefore(email);
             const result = await createNewAdmin(req.body);
+            delete result.data.response.email
+            delete result.data.response.password
+            delete result.data.response.is_admin
+            delete result.data.response.is_super_admin
+            delete result.data.response.created_at
+            delete result.data.response.updated_at
             return res.status(201).json(result);
         } catch (e) {
             return res.status(e.code).json(e);
@@ -42,21 +45,23 @@ router.post(
     }
 );
 
-router.put("/parcel/status/change/:user_id/:id", verifyToken,
+router.put("/parcel/status/change/:id", verifyAdminToken,
     async (req, res, next) => {
-        const { user_id } = req.params
-        const value = await schema.idparams.user_id.validate(user_id)
-        if (value.error) {
-            res.json({
-                message: value.error.details[0].message
+        try {
+            const { id } = req.params
+            await schema.idparam.id.validateAsync(id)
+            await schema.status.validateAsync(req.body)
+        } catch (error) {
+            return res.status(400).json({
+                error: error.details[0].message.replace(/[\"]/gi, "")
             })
         }
         next();
     },
     async (req, res) => {
-        const { user_id, id } = req.params;
+        const { id } = req.params;
         try {
-            const result = await changeOrderStatus(user_id, id, req.body);
+            const result = await changeOrderStatus(id, req.body);
             return res.status(200).json(result)
         } catch (e) {
             return res.status(e.code).json(e)
@@ -64,21 +69,22 @@ router.put("/parcel/status/change/:user_id/:id", verifyToken,
     }
 );
 
-router.put("/parcel/location/change/:user_id/:id", verifyToken,
+router.put("/parcel/location/change/:id", verifyAdminToken,
     async (req, res, next) => {
-        const { user_id } = req.params
-        const value = await schema.idparams.user_id.validate(user_id)
-        if (value.error) {
-            res.json({
-                message: value.error.details[0].message
+        const { id } = req.params
+        try {
+            await schema.idparam.id.validateAsync(id)
+        } catch (error) {
+            return res.status(400).json({
+                error: error.details[0].message.replace(/[\"]/gi, "")
             })
         }
         next();
     },
     async (req, res) => {
-        const { user_id, id } = req.params;
+        const { id } = req.params;
         try {
-            const result = await changeOrderlocation(user_id, id, req.body);
+            const result = await changeOrderlocation(id, req.body);
             return res.status(200).json(result)
         } catch (e) {
             return res.status(e.code).json(e)
@@ -86,7 +92,7 @@ router.put("/parcel/location/change/:user_id/:id", verifyToken,
     }
 );
 
-router.get("/parcels/all", verifyToken,
+router.get("/parcels/all", verifyAdminToken,
     async (req, res) => {
         try {
             const result = await getAllParcel();

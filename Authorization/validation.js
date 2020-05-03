@@ -10,22 +10,16 @@ dotenv.config()
 const salt = bcrypt.genSaltSync(10);
 const hashPassword = password => bcrypt.hashSync(password, salt);
 
-const generateUserToken = (email, id, first_name, last_name, is_admin, state) => {
+const generateUserToken = (first_name, id, last_name, email, is_admin, is_super_admin, state) => {
     const key = process.env.SECRET_KEY;
-    const token = jwt.sign({ 
-        id,
-        email, 
-        first_name, 
-        last_name,
-        is_admin, 
-        state }, key, { expiresIn: '1h' });
+    const token = jwt.sign({ id, email, first_name, last_name, is_admin, is_super_admin, state }, key, { expiresIn: '1h' });
     return token;
 };
 
 const schema = {
     user: joi.object({
         email: joi.string().email().required(),
-        password: joi.string().min(6).required(),
+        password: joi.string().pattern(new RegExp('^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.{6,})')).required(),
         first_name: joi.string().max(100).required(),
         last_name: joi.string().max(100).required(),
         state: joi.string().max(30).required()
@@ -33,7 +27,7 @@ const schema = {
 
     login: joi.object({
         email: joi.string().email().required(),
-        password: joi.string().min(6).required(),
+        password: joi.string().pattern(new RegExp('^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.{6,})')).required()
     }),
 
     parcel: joi.object({
@@ -45,10 +39,16 @@ const schema = {
         sender_note: joi.string()
     }),
 
-    idparams:{
+    idparam:{
         id: joi.number().required(),
+    },
+
+    idparams:{
         user_id: joi.number().required()
-    }
+    },
+    status: joi.object({
+        status: joi.string().valid('pending', 'shipped', 'delivered')
+    })
 };
 
 

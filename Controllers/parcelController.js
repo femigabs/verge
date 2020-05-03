@@ -10,7 +10,7 @@ async function createNewParcel(user_id, body) {
     const { price, weight, location, destination, sender_name, sender_note } = body;
     const queryObj = {
         text: queries.addNewParcel,
-        values: [user_id, price, weight, location, destination, sender_name, sender_note, status, created_at],
+        values: [user_id, price, weight, location, destination, sender_name, sender_note, status, created_at, created_at],
     };
 
     try {
@@ -101,9 +101,9 @@ async function getUserParcelByid(user_id){
     }
 }
 
-async function deleteUserParcelById(user_id, id){
+async function cancelParcelOrderById(user_id, id){
     const queryObj = {
-        text: queries.deleteUserOrderById,
+        text: queries.cancelParcelOrderById,
         values:[user_id, id]
     }
     try{
@@ -112,21 +112,21 @@ async function deleteUserParcelById(user_id, id){
             return Promise.reject({
                 status: "error",
                 code:500,
-                message:"order id could not be found"
+                message:"Order could not be found"
             });
         }
         if(rowCount > 0){
             return Promise.resolve({
                 status: "success",
                 code:200,
-                message:"Order deleted successfully",
+                message:"Order Cancelled successfully",
             });
         }
     }catch(e){
         return Promise.reject({
             status: "error",
             code: 500,
-            message: "Error deleting Order"
+            message: "Error Cancelling Order"
         })
     }
 }
@@ -143,7 +143,7 @@ async function updateOrderDestination(user_id, id, body){
             return Promise.reject({
                 status: "error",
                 code:500,
-                message:"order id could not b found"
+                message:"order id could not be found"
             });
         }
         if(rowCount > 0 && rows[0].status == "pending"){
@@ -191,7 +191,7 @@ async function checkStatus( user_id, id){
         return Promise.reject({
             status: "error",
             code: 500,
-            message: "Error finding user",
+            message: "Error finding Order",
         });
     }
 }
@@ -200,7 +200,7 @@ module.exports = {
     createNewParcel,
     getSpecificUserParcel,
     getUserParcelByid,
-    deleteUserParcelById,
+    cancelParcelOrderById,
     updateOrderDestination,
     checkStatus
 }

@@ -12,22 +12,22 @@ async function createNewUser(body) {
     const created_at = moment(d).format("YYYY-MM-DD HH:mm:ss");
     const { email, password, first_name, last_name, state } = body;
     const is_admin = false;
+    const is_super_admin = false;
     const hashedPassword = hashPassword(password)
     const queryObj = {
         text: queries.addNewUser,
-        values: [email, hashedPassword, first_name, last_name, state, created_at, is_admin],
+        values: [email, hashedPassword, first_name, last_name, state, created_at, created_at, is_admin, is_super_admin],
     };
 
     try {
         const { rowCount, rows } = await db.query(queryObj);
         const response = rows[0];
-        const tokens = generateUserToken(
-            response.id, 
-            response.first_name, 
-            response.last_name, 
-            response.email,
-            response.is_admin, 
-            response.state);
+        // delete response.email
+        // delete response.password  
+        // delete response.is_admin
+        // delete response.is_super_admin
+        // delete response.created_at
+        const tokens = generateUserToken(response.first_name, response.id, response.last_name, response.email, response.is_admin, response.is_super_admin, response.state);
         const data = {
             token: tokens,
             response
@@ -92,28 +92,22 @@ async function checkIfUserExist(email) {
         values: [email],
     };
     try {
-        const { rows } = await db.query(queryObj);
-        const response = rows[0];
-        const tokens = generateUserToken(
-            response.id, 
-            response.first_name, 
-            response.last_name, 
-            response.email,
-            response.is_admin, 
-            response.state);
-        const data = {
-            token: tokens,
-            response
-        }
-        if (response) {
-            return Promise.resolve(data);
-        }
-        if (!response) {
+        const { rows, rowCount } = await db.query(queryObj);
+        if (rowCount == 0) {
             return Promise.reject({
-                status:"error",
-                code:409,
-                message:"User Does not Exist"
+                status: "error",
+                code: 409,
+                message: "User Does not Exist"
             });
+        }
+        if (rowCount > 0) {
+            const response = rows[0];
+            const tokens = generateUserToken(response.first_name, response.id, response.last_name, response.email, response.is_admin, response.is_super_admin, response.state);
+            const data = {
+                token: tokens,
+                response
+            }
+            return Promise.resolve(data);
         }
     } catch (e) {
         return Promise.reject({
