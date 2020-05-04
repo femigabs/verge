@@ -82,29 +82,35 @@ async function checkIfUserDoesNotExistBefore(email) {
     }
 }
 
-async function changeOrderStatus(id, body){
-    const { status } = body
+async function changeOrderStatus(id, body) {
+    const { status } = body;
+    const d = new Date();
+    const updated_at = moment(d).format("YYYY-MM-DD HH:mm:ss");
     const queryObj = {
         text: queries.updateOrderStatusById,
-        values:[ status, id]
+        values: [status, updated_at, id]
     }
-    try{
-        const { rowCount } = await db.query(queryObj);
-        if(rowCount == 0 ){
+    try {
+        const { rows, rowCount } = await db.query(queryObj);
+        if (rowCount == 0) {
             return Promise.reject({
                 status: "error",
-                code:500,
-                message:"order id could not be found"
+                code: 500,
+                message: "order id could not be found"
             });
         }
-        if(rowCount > 0 ){
+        if (rowCount > 0) {
             return Promise.resolve({
                 status: "success",
-                code:200,
-                message:"Status Updated successfully",
+                code: 200,
+                message: "Status Updated successfully",
+                data: {
+                    status: rows[0].status,
+                    user_id: rows[0].user_id
+                }
             });
         }
-    }catch(e){
+    } catch (e) {
         console.log(e)
         return Promise.reject({
             status: "error",
@@ -114,29 +120,35 @@ async function changeOrderStatus(id, body){
     }
 }
 
-async function changeOrderlocation( id, body){
-    const { location } = body
+async function changeOrderlocation(id, body) {
+    const { location } = body;
+    const d = new Date();
+    const updated_at = moment(d).format("YYYY-MM-DD HH:mm:ss");
     const queryObj = {
         text: queries.updateOrderlocationById,
-        values:[ location, id]
+        values: [location, updated_at, id]
     }
-    try{
-        const {rowCount } = await db.query(queryObj);
-        if(rowCount === 0 ){
+    try {
+        const { rows, rowCount } = await db.query(queryObj);
+        if (rowCount === 0) {
             return Promise.reject({
                 status: "error",
-                code:500,
-                message:"order id could not be found"
+                code: 500,
+                message: "order id could not be found"
             });
         }
-        if(rowCount > 0 ){
+        if (rowCount > 0) {
             return Promise.resolve({
                 status: "success",
-                code:200,
-                message:"location Updated successfully",
+                code: 200,
+                message: "location Updated successfully",
+                data: {
+                    location: rows[0].location,
+                    user_id: rows[0].user_id
+                }
             });
         }
-    }catch(e){
+    } catch (e) {
         console.log(e)
         return Promise.reject({
             status: "error",
@@ -146,23 +158,23 @@ async function changeOrderlocation( id, body){
     }
 };
 
-async function getAllParcel (){
+async function getAllParcel() {
     const queryObj = {
         text: queries.getAllUserOrder
     };
-    try{
-        const {rows } = await db.query(queryObj);
+    try {
+        const { rows } = await db.query(queryObj);
         return Promise.resolve({
-            status:"success",
-            code:200,
-            message:"Successfully fetch all Parcel",
-            data : rows
+            status: "success",
+            code: 200,
+            message: "Successfully fetch all Parcel",
+            data: rows
         });
-    }catch(e){
+    } catch (e) {
         return Promise.reject({
-            status:"Error",
+            status: "Error",
             code: 500,
-            message:"Error fetching all blogs"
+            message: "Error fetching all blogs"
         })
     }
 };

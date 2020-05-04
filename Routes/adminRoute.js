@@ -15,6 +15,12 @@ const {
 
 const { verifyAdminToken, verifySuperAdminToken } = require("../Authorization/verifyToken");
 
+const {
+    getEmails,
+    statusMail,
+    locationMail
+} = require("../Nodemailer/nodemailer")
+
 router.post(
     "/auth/admin/signup", verifySuperAdminToken,
     async (req, res, next) => {
@@ -62,6 +68,8 @@ router.put("/parcel/status/change/:id", verifyAdminToken,
         const { id } = req.params;
         try {
             const result = await changeOrderStatus(id, req.body);
+            const email = await getEmails(result.data.user_id)
+            await statusMail(email, result.data.status)
             return res.status(200).json(result)
         } catch (e) {
             return res.status(e.code).json(e)
@@ -85,6 +93,8 @@ router.put("/parcel/location/change/:id", verifyAdminToken,
         const { id } = req.params;
         try {
             const result = await changeOrderlocation(id, req.body);
+            const email = await getEmails(result.data.user_id)
+            await locationMail(email, result.data.location)
             return res.status(200).json(result)
         } catch (e) {
             return res.status(e.code).json(e)

@@ -37,17 +37,19 @@ const queries = {
     cancelParcelOrderById: ` 
         DELETE FROM parcels WHERE user_id=($1) AND id=($2)`,
     updateOrderDestinationById: `
-        UPDATE parcels SET destination=($1), user_id=($2) WHERE id=($3) RETURNING *`,
+        UPDATE parcels SET destination=($1), user_id=($2), updated_at=($3) WHERE id=($4) RETURNING *`,
     updateOrderStatusById: `
-        UPDATE parcels SET status=($1) WHERE id=($2) RETURNING *`,
+        UPDATE parcels SET status=($1), updated_at=($2) WHERE id=($3) RETURNING *`,
     updateOrderlocationById: `
-        UPDATE parcels SET location=($1) WHERE id=($2) RETURNING *`,
+        UPDATE parcels SET location=($1), updated_at=($2) WHERE id=($3) RETURNING *`,
     getAllUserOrder: `
         SELECT * FROM parcels`,
     getStatus: `
         SELECT * FROM parcels WHERE user_id=($1) AND id=($2)`,
     findUserById: `
         SELECT * FROM users WHERE id=($1)`,
+    getEmail: `
+        SELECT email FROM users WHERE id=($1)`
 };
 
 module.exports = queries;
