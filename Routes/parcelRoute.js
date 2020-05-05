@@ -45,9 +45,9 @@ router.post(
 router.get(
     "/parcel/:id", verifyUserToken,
     async (req, res, next) => {
-        const user_id = res.locals.user.id;
         try {
-            await schema.idparams.user_id.validateAsync(user_id)
+            const { id } = req.params
+            await schema.idparam.id.validateAsync(id)
         } catch (error) {
             return res.status(400).json({
                 error: error.details[0].message.replace(/[\"]/gi, "")
